@@ -5,18 +5,9 @@ RUN awk '$1 ~ "^deb" { $3 = $3 "-backports"; print; exit }' /etc/apt/sources.lis
     apt-get update && \
     apt-get install -y --no-install-recommends certbot -t jessie-backports && \
     apt-get install -y --no-install-recommends python-dnspython && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/ && \
+    mkdir -p /var/www/letsencrypt/
 
-RUN mkdir -p /var/www/letsencrypt/ && \
-    mkdir -p /etc/letsencrypt/
-
-RUN echo 'rsa-key-size = 4096\n\
-text = True\n\
-agree-tos = True\n\
-renew-by-default = True\n\
-webroot-path = /var/www/letsencrypt\n\
-' > /etc/letsencrypt/cli.ini
-
-ADD nginx.conf /etc/nginx/nginx.conf
+COPY ./overlay/ /
 
 VOLUME /etc/letsencrypt
